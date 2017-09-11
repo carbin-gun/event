@@ -13,14 +13,11 @@ func main() {
 }
 
 func exampleA() {
-	e := event.New()
-	e.AddListener("mail.push", func(mailto string, title string, content string) {
+	e := event.New("mail.push")
+	e.AddListener(func(mailto string, title string, content string) {
 		fmt.Printf("mail to :%s,title:%s,content:%s\n", mailto, title, content)
 	})
-	e.AddListener("mail.push", func(mailto string, title string, content string) {
-		fmt.Printf("after mail to :%s,title:%s,content:%s\n", mailto, title, content)
-	})
-	e.Fire("mail.push", "zhengchao.deng@meican.com", "hello,mail test", "hello,don't reply to this email,it's just a test")
+	e.Fire("zhengchao.deng@meican.com", "test email", "don't reply")
 }
 
 //Mail definition for mail info
@@ -32,13 +29,13 @@ type Mail struct {
 }
 
 func exampleB() {
-	e := event.New()
-	e.AddListener("mail.push", func(mail Mail) {
+	e := event.New("mail.push")
+	e.AddListener(func(mail Mail) {
 		fmt.Printf("sending mail to :%s,title:%s,content:%s,sender:%s\n", mail.MailTo, mail.Title, mail.Content, mail.Sender)
 	})
-	e.AddListener("mail.push", func(mail Mail) {
+	e.AddListener(func(mail Mail) {
 		fmt.Printf("after mail to :%s,title:%s,content:%s,sender:%s\n", mail.MailTo, mail.Title, mail.Content, mail.Sender)
 	})
 	mail := Mail{"carbin-gun@github.com", "inquiry email", "do't reply", "no-reply@github.com"}
-	e.Fire("mail.push", mail)
+	e.Fire(mail)
 }

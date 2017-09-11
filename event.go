@@ -7,8 +7,9 @@ import (
 )
 
 //New generate a new producer
-func New() *Producer {
+func New(name string) *Producer {
 	return &Producer{
+		Name:                name,
 		subscriberContainer: make(map[string][]*subsciber),
 	}
 }
@@ -29,15 +30,17 @@ func newSubscriber(event string, fn reflect.Value, inTypes []reflect.Type) *subs
 
 // Producer which produces the events
 type Producer struct {
+	Name                string
 	subscriberContainer map[string][]*subsciber
 }
 
 // AddListener add a listener for a name-specified event
-func (p *Producer) AddListener(name string, callback interface{}) error {
+func (p *Producer) AddListener(callback interface{}) error {
 	funcVal, parametersType, err := p.precheckListenerCallback(callback)
 	if err != nil {
 		return err
 	}
+	name := p.Name
 	sub := newSubscriber(name, funcVal, parametersType)
 	exists, ok := p.subscriberContainer[name]
 	if !ok {
@@ -50,8 +53,8 @@ func (p *Producer) AddListener(name string, callback interface{}) error {
 }
 
 //Fire produce a name-specified event, wait to the subscriber to execute.
-func (p *Producer) Fire(name string, params ...interface{}) {
-	p.dispatchEvent(name, params...)
+func (p *Producer) Fire(params ...interface{}) {
+	p.dispatchEvent(p.Name, params...)
 }
 
 // AsyncFire make async call for the subscriber to execute.
